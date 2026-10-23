@@ -143,7 +143,8 @@
         ctx.strokeStyle=e.special?`rgba(74,91,115,${.27*pulse})`:`rgba(88,112,132,${.13*pulse})`;
         ctx.lineWidth=e.special?1.7:1.0;
       } else {
-        ctx.strokeStyle=palette[a.baseCommunity].edge;
+        const ca=(a.bridge && (.5+.5*Math.sin(t*.00042+a.phase))>.62)?a.bridgeTo:a.baseCommunity;
+         ctx.strokeStyle=palette[ca].edge;
         ctx.lineWidth=1.25;
       }
       ctx.stroke();
