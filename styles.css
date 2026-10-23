@@ -83,3 +83,13 @@ h2{font-size:clamp(2rem,4vw,3.2rem);letter-spacing:-.035em;line-height:1.1;margi
 @media(max-width:1000px){.collab-layout{grid-template-columns:1fr}.collab-visual svg{max-height:490px}}
 @media(max-width:550px){.coauthor-list{grid-template-columns:1fr}.collab-side{padding:15px}.collab-visual{padding:0}.coauthor-node text{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.coauthor-node circle,.coauthor-edge{transition:none}}
+
+/* Academic service: native card language with improved scannability */
+.service-intro{max-width:810px;color:var(--muted);font-size:1.06rem;line-height:1.7}
+.service-grid{align-items:stretch}.service-card{border-top:3px solid var(--teal)}
+.service-card h3{color:var(--blue)}
+.service-list{list-style:none;padding:0;margin:17px 0 0;display:grid;gap:0}
+.service-list li{display:grid;gap:3px;border-top:1px solid var(--line);padding:12px 0}
+.service-list li strong{color:#173d5a;font-size:.94rem}
+.service-list li span{color:#526676;font-size:.87rem;line-height:1.5}
+@media(max-width:650px){.service-grid{grid-template-columns:1fr}}
