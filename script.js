@@ -175,3 +175,47 @@
   }
   requestAnimationFrame(animate);
 })();
+
+
+// Interactive coauthor graph (bibliography-backed, no external libraries or network requests).
+(() => {
+  const people = [{"name": "Christophe Demko", "url": "https://scholar.google.com/citations?user=2yxJAEYAAAAJ", "topic": "Network science / FCA", "institution": "L3i · La Rochelle", "works": ["Fuzzy and Overlapping Communities Detection (2024)", "Détection de Communautés Floues et Chevauchantes (2024)", "Dynamic and Overlapping Community Detection in Link Streams (2025)", "From Non-overlapping to Overlapping Communities (2025)", "Reduced Subcontext Completion (2025)", "Stable Concepts from Communities and Communities from Concepts (2026)", "HyFALO: Detecting Communities in Hypergraphs (2026)", "Shapley-Based Community Deception (2026)", "Garde alternée dans les graphes (2026)", "h-ABCD+o²: Hypergraph Benchmark (accepted, 2026)"]}, {"name": "Jean-Loup Guillaume", "url": "https://scholar.google.com/citations?user=khOMuc0AAAAJ", "topic": "Network science / hypergraphs", "institution": "L3i · La Rochelle", "works": ["Fuzzy and Overlapping Communities Detection (2024)", "Détection de Communautés Floues et Chevauchantes (2024)", "Dynamic and Overlapping Community Detection in Link Streams (2025)", "From Non-overlapping to Overlapping Communities (2025)", "Stable Concepts from Communities and Communities from Concepts (2026)", "HyFALO: Detecting Communities in Hypergraphs (2026)", "Shapley-Based Community Deception (2026)", "Garde alternée dans les graphes (2026)", "h-ABCD+o²: Hypergraph Benchmark (accepted, 2026)", "Rethinking the Local-Move–Aggregate Hierarchy (accepted, 2026)"]}, {"name": "Karell Bertet", "url": "https://scholar.google.com/citations?user=HYPEcjkAAAAJ", "topic": "Formal Concept Analysis", "institution": "L3i · La Rochelle", "works": ["Fuzzy and Overlapping Communities Detection (2024)", "Détection de Communautés Floues et Chevauchantes (2024)", "Dynamic and Overlapping Community Detection in Link Streams (2025)", "From Non-overlapping to Overlapping Communities (2025)", "Reduced Subcontext Completion (2025)", "Stable Concepts from Communities and Communities from Concepts (2026)", "HyFALO: Detecting Communities in Hypergraphs (2026)", "Shapley-Based Community Deception (2026)", "Garde alternée dans les graphes (2026)", "h-ABCD+o²: Hypergraph Benchmark (accepted, 2026)"]}, {"name": "Antoine Huchet", "url": "https://scholar.google.com/scholar?q=Antoine%20Huchet", "topic": "Overlapping communities", "institution": "Research collaborations", "works": ["From Non-overlapping to Overlapping Communities (2025)", "Garde alternée dans les graphes (2026)"]}, {"name": "Dhorasso Temfack", "url": "https://scholar.google.com/scholar?q=Dhorasso%20Temfack", "topic": "Hypergraph communities", "institution": "Research collaborations", "works": ["HyFALO: Detecting Communities in Hypergraphs (2026)"]}, {"name": "Rokia Missaoui", "url": "https://scholar.google.com/citations?user=2LHBipkAAAAJ", "topic": "Hypergraph benchmarks", "institution": "UQO · Québec", "works": ["h-ABCD+o²: Hypergraph Benchmark (accepted, 2026)"]}, {"name": "Etienne Tajeuna", "url": "https://scholar.google.com/citations?user=KMJ0lxsAAAAJ", "topic": "Hypergraph benchmarks", "institution": "UQO · Québec", "works": ["h-ABCD+o²: Hypergraph Benchmark (accepted, 2026)"]}, {"name": "Charles Kamhoua", "url": "https://scholar.google.com/citations?user=61aQqBEAAAAJ", "topic": "Cyberdeception / attack graphs", "institution": "Research collaborations", "works": ["Shapley Value to Rank Vulnerabilities on Attack Graphs (2026)"]}, {"name": "Serge Olivier Tsemogne Kamguia", "url": "https://scholar.google.com/citations?user=xuGXsysAAAAJ", "topic": "Game theory / security", "institution": "Research collaborations", "works": ["Shapley Value to Rank Vulnerabilities on Attack Graphs (2026)"]}, {"name": "Blaise Blériot Koguep Njionou", "url": "https://scholar.google.com/citations?user=iYbPlkEAAAAJ", "topic": "Cooperative games / FCA", "institution": "University of Dschang", "works": ["Shapley Values in Classification Problems (2024)", "Cooperative Games with Fuzzy Characteristic Functions (2025)"]}, {"name": "Dmitry Ignatov", "url": "https://scholar.google.com/citations?user=iExWnWsAAAAJ", "topic": "Formal Concept Analysis", "institution": "Research collaborations", "works": ["Shapley Values in Classification Problems (2024)", "Cooperative Games with Fuzzy Characteristic Functions (2025)"]}, {"name": "Léonard Kwuida", "url": "https://scholar.google.com/citations?user=nO1I3s0AAAAJ", "topic": "Lattice theory / FCA", "institution": "Research collaborations", "works": ["Shapley Values in Classification Problems (2024)", "Cooperative Games with Fuzzy Characteristic Functions (2025)"]}, {"name": "Jérémy Richard", "url": "https://scholar.google.com/scholar?q=J%C3%A9r%C3%A9my%20Richard", "topic": "Concept lattices", "institution": "Research collaborations", "works": ["Reduced Subcontext Completion (2025)"]}, {"name": "Cyril Faucher", "url": "https://scholar.google.com/scholar?q=Cyril%20Faucher", "topic": "Concept lattices", "institution": "Research collaborations", "works": ["Reduced Subcontext Completion (2025)"]}];
+  const svg = document.getElementById('coauthor-network');
+  const list = document.getElementById('coauthor-list');
+  const detail = document.getElementById('coauthor-detail');
+  if (!svg || !list || !detail) return;
+  const NS='http://www.w3.org/2000/svg', cx=330,cy=262;
+  const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));parent.append(e);return e;};
+  const edges=[],nodes=[],buttons=[];
+  const setInfo=(index)=>{
+    const person=people[index];
+    edges.forEach((e,i)=>e.classList.toggle('active',i===index));
+    nodes.forEach((e,i)=>e.classList.toggle('active',i===index));
+    buttons.forEach((e,i)=>{e.classList.toggle('active',i===index);e.setAttribute('aria-pressed',String(i===index));});
+    detail.replaceChildren();
+    const heading=document.createElement('h3');heading.textContent=person.name;detail.append(heading);
+    const topic=document.createElement('p');topic.textContent=person.topic;detail.append(topic);
+    const count=document.createElement('p');count.textContent=person.works.length+' shared publication'+(person.works.length===1?'':'s')+' listed on this website';detail.append(count);
+    const ul=document.createElement('ul');person.works.forEach(t=>{const li=document.createElement('li');li.textContent=t;ul.append(li);});detail.append(ul);
+    const a=document.createElement('a');a.href=person.url;a.target='_blank';a.rel='noopener noreferrer';a.className='coauthor-scholar';a.textContent=person.url.includes('/scholar?')?'Find on Google Scholar ↗':'Google Scholar profile ↗';detail.append(a);
+  };
+  people.forEach((person,i)=>{
+    const angle=(-Math.PI/2)+(i*2*Math.PI/people.length);
+    const x=cx+243*Math.cos(angle),y=cy+196*Math.sin(angle);
+    const edge=el('line',{x1:cx,y1:cy,x2:x,y2:y,class:'coauthor-edge'},svg);edges.push(edge);
+    const g=el('g',{class:'coauthor-node',tabindex:'0',role:'button','aria-label':'Explore shared publications with '+person.name},svg);
+    el('circle',{cx:x,cy:y,r:27},g);
+    const first=person.name.split(' ')[0];const last=person.name.split(' ').slice(-1)[0];
+    const t=el('text',{x,y:y-34},g);t.textContent=last.length>12?last.slice(0,11)+'…':last;
+    const title=el('title',{},g);title.textContent=person.name+' — '+person.works.length+' shared publications';
+    g.addEventListener('click',()=>setInfo(i));g.addEventListener('mouseenter',()=>setInfo(i));g.addEventListener('focus',()=>setInfo(i));
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setInfo(i);}});
+    nodes.push(g);
+    const b=document.createElement('button');b.type='button';b.className='coauthor-btn';b.textContent=person.name;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>setInfo(i));b.addEventListener('mouseenter',()=>setInfo(i));list.append(b);buttons.push(b);
+  });
+  const center=el('g',{class:'coauthor-center'},svg);el('circle',{cx,cy,r:66},center);
+  const one=el('text',{x:cx,y:cy-10},center);one.textContent='Martin Waffo';
+  const two=el('text',{x:cx,y:cy+11},center);two.textContent='Kemgne';
+  const three=el('text',{x:cx,y:cy+31,style:'font-size:10px;font-weight:500;opacity:.85'},center);three.textContent='14 coauthors';
+  setInfo(0);
+})();
